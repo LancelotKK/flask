@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实时数据展示</title>
+</head>
+<body>
+    <h1>实时测量数据</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>时间</th>
+                <th>铝 (Al)</th>
+                <th>铁 (Fe)</th>
+                <th>硅 (Si)</th>
+            </tr>
+        </thead>
+        <tbody id="data-table-body">
+            <!-- 数据行将被动态添加 -->
+        </tbody>
+    </table>
+
+    <script>
+        // 定期从服务器获取数据
+        function fetchData() {
+            fetch('/get_data')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('data-table-body');
+                    tableBody.innerHTML = '';  // 清空表格内容
+
+                    data.forEach(record => {
+                        const row = document.createElement('tr');
+
+                        // 创建单元格并填入数据
+                        const timeCell = document.createElement('td');
+                        timeCell.textContent = record.time;
+                        row.appendChild(timeCell);
+
+                        const aluminumCell = document.createElement('td');
+                        aluminumCell.textContent = record.aluminum !== null ? record.aluminum : "无数据";
+                        row.appendChild(aluminumCell);
+
+                        const ironCell = document.createElement('td');
+                        ironCell.textContent = record.iron !== null ? record.iron : "无数据";
+                        row.appendChild(ironCell);
+
+                        const siliconCell = document.createElement('td');
+                        siliconCell.textContent = record.silicon !== null ? record.silicon : "无数据";
+                        row.appendChild(siliconCell);
+
+                        tableBody.appendChild(row);  // 添加行到表格主体
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        setInterval(fetchData, 1000); // 每隔1秒获取数据
+    </script>
+</body>
+</html>
